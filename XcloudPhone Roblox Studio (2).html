@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XcloudPhone Roblox Studio</title>
+<style>
+:root{--bg:#f4f5f9;--card:#fff;--tx:#161a26;--mu:#5d6478;--ac:#e2231a;--ac2:#fff;--bd:#d9dce6;--in:#f0f1f6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1019;--card:#171b28;--tx:#eef0f7;--mu:#98a0b6;--ac:#ff4a40;--ac2:#fff;--bd:#2a3042;--in:#0f1320;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1019;--card:#171b28;--tx:#eef0f7;--mu:#98a0b6;--ac:#ff4a40;--ac2:#fff;--bd:#2a3042;--in:#0f1320;color-scheme:dark}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0}
+.sub{color:var(--mu);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:16px;margin:0 0 10px}
+button,select,input,textarea{font:inherit;color:var(--tx)}
+button{background:var(--in);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.p{background:var(--ac);border-color:var(--ac);color:var(--ac2);font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+select,input[type=number],textarea{background:var(--in);border:1px solid var(--bd);border-radius:10px;padding:8px;width:100%}
+textarea{min-height:150px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+label.f{display:block;font-size:13px;color:var(--mu)}
+label.f input[type=range]{width:100%}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:14px}
+.item{display:flex;justify-content:space-between;gap:8px;padding:8px;border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;font-size:14px}
+.item.on{border-color:var(--ac)}
+.item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv{display:flex;justify-content:center;background:#000;border-radius:12px;overflow:hidden}
+canvas{max-width:100%;max-height:60vh}
+.mu{color:var(--mu);font-size:13px}
+.bar{height:8px;background:var(--in);border-radius:6px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;width:0;background:var(--ac)}
+a.dl{color:var(--ac)}.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tabs button.on{background:var(--ac);color:var(--ac2);border-color:var(--ac)}.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}.modal .card{max-width:520px;max-height:85vh;overflow:auto}.clock{font:700 34px ui-monospace,monospace;text-align:center}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🎮 XcloudPhone Roblox Studio</h1>
+<p class="sub">Cắt khung Roblox, chèn phụ đề và giọng đọc, xuất video hàng loạt. Mọi thứ chạy ngay trong trình duyệt (nên dùng Chrome trên máy tính).</p>
+
+<div class="tabs"><button class="on" data-t="e">✨ Edit hàng loạt</button><button data-t="r">🎥 Quay trực tiếp</button><button data-t="g">📱 Cách xài trên iPhone/Android</button></div>
+<div id="tabEdit">
+<div class="card">
+<h2>Bước 1 · Thêm video</h2>
+<div class="row">
+<input type="file" id="files" accept="video/*" multiple hidden>
+<button class="p" onclick="$('#files').click()">📂 Chọn video từ máy</button>
+<button id="recBtn">🔴 Quay màn hình</button>
+<label class="mu">Dài <input type="number" id="recSec" value="70" min="5" max="600" style="width:70px;display:inline-block"> giây</label>
+</div>
+<div id="list" class="mu">Chưa có video nào.</div>
+</div>
+
+<div class="card">
+<h2>Bước 2 · Cắt khung Roblox</h2>
+<div class="grid">
+<label class="f">Khung xuất
+<select id="ratio"><option value="v">Dọc 9:16 (TikTok)</option><option value="h">Ngang 16:9</option></select></label>
+<label class="f">Kiểu cắt
+<select id="preset">
+<option value="std">Vừa khung, dư nhẹ viền</option>
+<option value="tight">Sát khung game</option>
+<option value="full">Giữ nguyên toàn màn hình</option></select></label>
+</div>
+<div class="grid" style="margin-top:8px">
+<label class="f">Lề trái <b id="vx"></b><input type="range" id="cx" min="0" max="50"></label>
+<label class="f">Lề trên <b id="vy"></b><input type="range" id="cy" min="0" max="50"></label>
+<label class="f">Rộng <b id="vw"></b><input type="range" id="cw" min="30" max="100"></label>
+<label class="f">Cao <b id="vh"></b><input type="range" id="ch" min="30" max="100"></label>
+</div>
+</div>
+
+<div class="card">
+<h2>Bước 3 · Kịch bản (cách 1 dòng trống = 1 video)</h2>
+<textarea id="script" placeholder="Đoạn 1&#10;&#10;Đoạn 2&#10;&#10;Đoạn 3"></textarea>
+<div class="row" style="margin-top:8px">
+<button id="sample">✨ Điền 3 đoạn mẫu Roblox</button><button id="auto" class="p">🤖 Tự tạo kịch bản cho từng video</button>
+<span id="match" class="mu"></span>
+</div>
+<p class="mu">Gợi ý: chỉ nói điều bạn thật sự đã dùng và thấy, nên ghi rõ đây là nội dung quảng cáo hoặc hợp tác để người xem không bị hiểu nhầm.</p>
+</div>
+
+<div class="card">
+<h2>Bước 4 · Giọng đọc và phụ đề</h2>
+<div class="grid">
+<label class="f">Giọng đọc (có sẵn trên máy bạn)<select id="voice"></select></label>
+<label class="f">Tốc độ giọng
+<select id="rate"><option value="auto">Tự canh vừa độ dài video</option><option value="1">1.0x</option><option value="1.15">1.15x</option><option value="1.3">1.3x</option></select></label>
+<label class="f">Màu chữ
+<select id="color"><option value="#ffe600">Vàng</option><option value="#ffffff">Trắng</option><option value="#25f4ee">Xanh cyan</option><option value="#7dff5a">Xanh lá</option></select></label>
+<label class="f">Cỡ chữ
+<select id="fsize"><option value="0.06">Vừa</option><option value="0.075" selected>Lớn</option><option value="0.09">Rất lớn</option></select></label>
+<label class="f">Vị trí phụ đề
+<select id="pos"><option value="0.82">Dưới</option><option value="0.5">Giữa</option><option value="0.18">Trên</option></select></label>
+</div>
+<label class="chk"><input type="checkbox" id="phon" checked> Tự phiên âm từ tiếng Anh khi đọc (XcloudPhone ➔ Ích Cờ Lao Phôn, Roblox ➔ Rô Blốc)</label>
+<p id="vnote" class="mu"></p>
+</div>
+
+<div class="card">
+<h2>Xem trước</h2>
+<div class="row"><select id="pair" style="flex:1"></select><button id="play">▶️ Phát</button><button id="say">🔊 Nghe thử giọng</button><button id="srt">📝 Tải .SRT</button></div>
+<div class="pv"><canvas id="cv" width="360" height="640"></canvas></div>
+<div id="curSub" class="mu" style="margin-top:6px"></div>
+</div>
+
+<div class="card">
+<h2>Xuất video</h2>
+<label class="chk"><input type="checkbox" id="keepAudio" checked> Giữ tiếng gốc của video</label>
+<div class="grid">
+<label class="f">Thời lượng xuất<select id="dur"><option value="auto">Tự động theo video gốc</option><option value="70">70 giây (01:10)</option><option value="15">15 giây (test)</option></select></label>
+<label class="f">Tốc độ video gốc (sửa video lỡ bị x2)<select id="vspd"><option value="1">1.0x</option><option value="0.75">0.75x</option><option value="0.5">0.5x</option></select></label>
+<label class="f">Dán file MP3/WAV thay giọng đọc<input type="file" id="mp3" accept="audio/*"></label>
+</div>
+<label class="f">Nguồn giọng đọc trong video
+<select id="vsrc"><option value="mic">Thu qua mic (chạy cả điện thoại: để loa gần mic, bỏ tai nghe)</option><option value="tab">Thu từ tab (chỉ Chrome/Edge máy tính, bật chia sẻ âm thanh tab)</option><option value="none">Không có giọng (chỉ phụ đề, hoặc dùng file MP3 bên trên)</option></select></label>
+<div class="row">
+<button class="p" id="exOne">⬇️ Xuất video đang chọn</button>
+<button class="p" id="exAll">🚀 Xuất tất cả</button>
+<button id="stop">⏹️ Dừng</button>
+</div>
+<div class="bar"><i id="prog"></i></div>
+<div id="status" class="mu">Video được xuất theo thời gian thực nên mất bằng đúng độ dài video.</div>
+<div id="out"></div>
+</div>
+</div>
+<div id="tabRec" hidden>
+<div class="card"><h2>Quay hàng loạt · mỗi video đúng 1p10s</h2>
+<div class="grid">
+<label class="f">Số video<input type="number" id="rn" value="5" min="1" max="50"></label>
+<label class="f">Thời lượng mỗi video<select id="rd"><option value="70">01:10 (70 giây)</option><option value="65">01:05</option><option value="75">01:15</option><option value="5">00:05 (test)</option></select></label>
+<label class="f">Đếm ngược đầu (giây)<select id="rc"><option>3</option><option>5</option><option>0</option></select></label>
+<label class="f">Nghỉ giữa 2 video (giây)<select id="rg"><option>1</option><option>2</option><option>3</option><option>0</option></select></label>
+<label class="f">FPS<select id="rf"><option>30</option><option>60</option></select></label>
+</div>
+<label class="chk"><input type="checkbox" id="ra" checked> Thu cả âm thanh game (chọn chia sẻ âm thanh khi trình duyệt hỏi)</label>
+<label class="chk"><input type="checkbox" id="rk" checked> Chống dừng khi đổi tab (đồng hồ chạy bằng Web Worker + âm thanh giữ thức)</label>
+<div class="row"><button id="pip">🪟 Bật cửa sổ nổi</button><button class="p" id="rs">🔴 Bắt đầu quay</button><button id="rx">⏹️ Dừng</button></div>
+<div class="clock" id="clk">01:10</div><div class="bar"><i id="rp"></i></div>
+<div id="rst" class="mu">Mở sẵn Roblox trên XcloudPhone, bấm bắt đầu và chọn cửa sổ đó một lần.</div>
+</div>
+<div class="card"><h2>Hoặc nạp video quay màn hình điện thoại, tự cắt thành nhiều video</h2>
+<p class="mu">Dùng thời lượng ở trên. Tool chia ngay, không cần quay lại.</p>
+<input type="file" id="phone" accept="video/*" hidden><button onclick="$('#phone').click()">📂 Nạp video quay ĐT ➔ tự cắt N video</button></div>
+<div class="card"><h2>Video đã quay (<span id="rcnt">0</span>)</h2><div id="rlist" class="mu">Chưa có video nào.</div>
+<button id="toEdit" class="p">✨ Chuyển tất cả qua tab Edit</button></div>
+</div>
+<div id="guide" class="modal" hidden><div class="card"><h2>📱 Hướng dẫn trên iPhone / Android</h2>
+<p><b>1.</b> Qua tab Quay, bật cửa sổ nổi rồi bấm Bắt đầu quay. Đồng hồ và bộ ghi chạy bằng Web Worker nên đổi tab vẫn đếm tiếp (iOS có thể vẫn hạn chế).</p>
+<p><b>2.</b> Nếu trình duyệt điện thoại không cho quay, hãy quay màn hình bằng máy rồi nạp vào nút “Nạp video quay ĐT”, tool tự cắt thành Video 1, 2, 3...</p>
+<p><b>3.</b> Qua tab Edit, chỉnh khung, dán hoặc tự tạo kịch bản, bấm xuất rồi lưu về máy.</p>
+<p><b>4.</b> Thêm ra màn hình chính: iPhone (Safari) bấm Chia sẻ ➔ Thêm vào MH chính. Android (Chrome) bấm ⋮ ➔ Cài đặt ứng dụng.</p>
+<button class="p" onclick="$('#guide').hidden=true">Đã hiểu</button></div></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let vids=[],cur=0,stopFlag=false,busy=false;
+const SAMPLE=[
+"Anh em chơi Roblox mà máy yếu hay bị giật lag thì thử XcloudPhone nhé. Đây là điện thoại đám mây, game chạy trên máy chủ nên máy của mình không còn phải gồng gánh. Mình mở lên là vào game luôn, không cần cài nặng máy.\n",
+"Hôm nay mình thử treo Roblox bằng XcloudPhone. Điểm mình thích là mở trên máy tính hay điện thoại đều được, thao tác chạm vuốt khá mượt. Chơi lâu cũng không lo máy cá nhân nóng hay hao pin.\n",
+"Nếu anh em muốn tự kiểm chứng thì cứ đăng ký XcloudPhone và dùng thử Roblox trên đó. Mỗi người trải nghiệm một khác, nên mình khuyên cứ thử rồi tự đánh giá. Video này có hợp tác quảng cáo nhé."
+];
+const PRE={std:[8.5,13.5,70.5,75.5],tight:[12,16,64,70],full:[0,0,100,100]};
+function setCrop(a){[['cx',0],['cy',1],['cw',2],['ch',3]].forEach(([id,i])=>$('#'+id).value=a[i]);lab()}
+function lab(){$('#vx').textContent=$('#cx').value+'%';$('#vy').textContent=$('#cy').value+'%';$('#vw').textContent=$('#cw').value+'%';$('#vh').textContent=$('#ch').value+'%'}
+function crop(){return{x:$('#cx').value/100,y:$('#cy').value/100,w:Math.min($('#cw').value/100,1-$('#cx').value/100),h:Math.min($('#ch').value/100,1-$('#cy').value/100)}}
+function dims(){return $('#ratio').value==='v'?[720,1280]:[1280,720]}
+function scripts(){return $('#script').value.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean)}
+function sents(t){return (t||'').split(/(?<=[.!?…])\s+/).filter(Boolean)}
+function subAt(i,t,d){const s=sents(scripts()[i]);if(!s.length)return'';const tot=s.reduce((a,x)=>a+x.length,0);let acc=0;for(const x of s){acc+=x.length;if(t<=acc/tot*d)return x}return s[s.length-1]}
+
+function draw(ctx,v,W,H,txt){
+ ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+ const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;
+ const c=crop();let sx=vw*c.x,sy=vh*c.y,sw=vw*c.w,sh=vh*c.h;
+ const ra=W/H,rs=sw/sh;
+ if(rs>ra){const n=sh*ra;sx+=(sw-n)/2;sw=n}else{const n=sw/ra;sy+=(sh-n)/2;sh=n}
+ ctx.drawImage(v,sx,sy,sw,sh,0,0,W,H);
+ if(!txt)return;
+ const fs=Math.round(W*parseFloat($('#fsize').value));
+ ctx.font='800 '+fs+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+ const words=txt.split(' '),lines=[];let line='';
+ for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>W*0.88&&line){lines.push(line);line=w}else line=t}
+ if(line)lines.push(line);
+ const lh=fs*1.25,y0=H*parseFloat($('#pos').value)-(lines.length-1)*lh/2;
+ ctx.lineJoin='round';ctx.lineWidth=fs*0.2;ctx.strokeStyle='#000';ctx.fillStyle=$('#color').value;
+ lines.forEach((l,k)=>{ctx.strokeText(l,W/2,y0+k*lh);ctx.fillText(l,W/2,y0+k*lh)});
+}
+
+/* ---------- list ---------- */
+function renderList(){
+ const L=$('#list');
+ if(!vids.length){L.textContent='Chưa có video nào.';$('#pair').innerHTML='';return}
+ L.innerHTML='';
+ vids.forEach((v,i)=>{
+  const d=document.createElement('div');d.className='item'+(i===cur?' on':'');
+  d.innerHTML='<span>#'+(i+1)+' '+v.name+'</span><button>Xóa</button>';
+  d.firstChild.onclick=()=>{cur=i;renderList()};
+  d.lastChild.onclick=e=>{e.stopPropagation();vids.splice(i,1);cur=Math.max(0,Math.min(cur,vids.length-1));renderList()};
+  L.appendChild(d)});
+ $('#pair').innerHTML=vids.map((v,i)=>'<option value="'+i+'"'+(i===cur?' selected':'')+'>Video #'+(i+1)+' ↔ Đoạn #'+(i+1)+'</option>').join('');
+ loadPreview();match();
+}
+function addVideo(blob,name){vids.push({url:URL.createObjectURL(blob),name});cur=vids.length-1;renderList()}
+$('#files').onchange=e=>{[...e.target.files].forEach(f=>addVideo(f,f.name));e.target.value=''};
+$('#pair').onchange=e=>{cur=+e.target.value;renderList()};
+function match(){const n=scripts().length;$('#match').textContent=vids.length?(n===vids.length?'✅ Khớp '+n+' video ↔ '+n+' đoạn':'⚠️ '+vids.length+' video, '+n+' đoạn kịch bản'):''}
+
+/* ---------- preview ---------- */
+const pv=document.createElement('video');pv.playsInline=true;pv.muted=true;pv.loop=true;
+const cv=$('#cv'),cx=cv.getContext('2d');
+function loadPreview(){
+ const d=dims();cv.width=d[0]/2;cv.height=d[1]/2;
+ if(vids[cur]){pv.src=vids[cur].url;pv.onloadedmetadata=()=>{pv.currentTime=vids[cur].start||0}}
+}
+function loop(){
+ const it=vids[cur];
+ if(it){const st=it.start||0;if(it.end&&pv.currentTime>=it.end)pv.currentTime=st;const t=sub=subAt(cur,(pv.currentTime||0)-st,it.end?it.end-st:(pv.duration||1));draw(cx,pv,cv.width,cv.height,t);$('#curSub').textContent=t}
+ else{cx.fillStyle='#000';cx.fillRect(0,0,cv.width,cv.height)}
+ requestAnimationFrame(loop)}
+let sub='';loop();
+$('#play').onclick=()=>{pv.paused?pv.play():pv.pause()};
+['cx','cy','cw','ch'].forEach(id=>$('#'+id).oninput=lab);
+$('#preset').onchange=e=>setCrop(PRE[e.target.value]);
+$('#ratio').onchange=loadPreview;
+$('#script').oninput=match;
+$('#sample').onclick=()=>{$('#script').value=SAMPLE.map(s=>s.trim()).join('\n\n');match()};
+
+/* ---------- voice ---------- */
+let voices=[];
+function loadVoices(){
+ voices=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('vi'));
+ $('#voice').innerHTML=voices.length?voices.map((v,i)=>'<option value="'+i+'">'+v.name+'</option>').join(''):'<option value="-1">Mặc định của trình duyệt</option>';
+ $('#vnote').textContent=voices.length?'':'Máy bạn chưa có giọng tiếng Việt, hãy cài thêm trong cài đặt hệ thống hoặc dùng Chrome/Edge.';
+}
+speechSynthesis.onvoiceschanged=loadVoices;loadVoices();
+function speak(text,dur){
+ const u=new SpeechSynthesisUtterance($('#phon').checked?phon(text):text);u.lang='vi-VN';
+ const v=voices[+$('#voice').value];if(v)u.voice=v;
+ let r=$('#rate').value;
+ u.rate=r==='auto'?Math.max(0.8,Math.min(1.5,text.length/((dur||70)*14))):parseFloat(r);
+ speechSynthesis.cancel();speechSynthesis.speak(u);return u}
+$('#say').onclick=()=>{const t=scripts()[cur];if(t)speak(t,pv.duration)};
+
+/* ---------- record ---------- */
+let rec=null;
+$('#recBtn').onclick=async()=>{
+ if(rec){rec.stop();return}
+ try{
+  const s=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
+  const chunks=[];rec=new MediaRecorder(s,{mimeType:pickMime()});
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  const sec=Math.max(5,+$('#recSec').value||70);
+  const to=setTimeout(()=>rec&&rec.state!=='inactive'&&rec.stop(),sec*1000);
+  rec.onstop=()=>{clearTimeout(to);s.getTracks().forEach(t=>t.stop());
+   addVideo(new Blob(chunks,{type:rec.mimeType||'video/webm'}),'Quay_'+(vids.length+1)+(String(rec.mimeType).includes('mp4')?'.mp4':'.webm'));rec=null;$('#recBtn').textContent='🔴 Quay màn hình'};
+  rec.start(1000);$('#recBtn').textContent='⏹️ Dừng quay';
+ }catch(e){status('Không bắt đầu quay được: '+e.message)}
+};
+function pickMime(mp){const w=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'],m=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4'];return (mp?m.concat(w):w.concat(m)).find(x=>MediaRecorder.isTypeSupported(x))||''}
+
+/* ---------- export ---------- */
+function status(t){$('#status').textContent=t}
+async function exportOne(i,label){
+ const it=vids[i];
+ const v=document.createElement('video');v.src=it.url;v.playsInline=true;v.preload='auto';
+ await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error('Không đọc được video'))});
+ if(!isFinite(v.duration)||v.duration<1.5){v.currentTime=1e7;await new Promise(r=>v.onseeked=r);v.currentTime=0;await new Promise(r=>v.onseeked=r)}
+ const st=it.start||0,lim=$('#dur').value,full=it.end?it.end-st:v.duration-st;const d=lim==='auto'?(full<1.5?70:full):(full<1.5?+lim:Math.min(full,+lim)),[W,H]=dims();v.playbackRate=+$('#vspd').value;
+ const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');
+ const stream=c.captureStream(30);
+ const ac=new AudioContext(),dest=ac.createMediaStreamDestination();
+ if($('#keepAudio').checked){ac.createMediaElementSource(v).connect(dest)}
+ let disp=null;
+ const vs=$('#vsrc').value;if(vs!=='none'&&scripts()[i]&&!ext){
+  try{
+   disp=vs==='mic'?await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}):await navigator.mediaDevices.getDisplayMedia({video:true,audio:true,preferCurrentTab:true});
+   disp.getVideoTracks().forEach(t=>t.stop());
+   const a=disp.getAudioTracks();
+   if(a.length)ac.createMediaStreamSource(new MediaStream(a)).connect(dest);
+   else status('Chưa nhận được âm thanh tab, video sẽ không có giọng đọc.');
+  }catch(e){status('Bỏ qua thu giọng đọc: '+e.message)}
+ }
+ dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+ const chunks=[],mime=pickMime(true),r=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+ r.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+ const done=new Promise(ok=>r.onstop=ok);
+ if(Math.abs(v.currentTime-st)>0.05){v.currentTime=st;await new Promise(o=>v.onseeked=o)}r.start(1000);await ac.resume();v.play().catch(()=>status('Trình duyệt chặn tự phát video, hãy bấm xuất lại.'));
+ if(disp&&scripts()[i])speak(scripts()[i],d/v.playbackRate);if(ext){const a=new Audio(ext);ac.createMediaElementSource(a).connect(dest);a.play()}
+ await new Promise(ok=>{
+  const tick=()=>{
+   if(stopFlag||v.ended||v.currentTime-st>=d){ok();return}
+   draw(ctx,v,W,H,subAt(i,v.currentTime-st,d));
+   $('#prog').style.width=Math.round((v.currentTime-st)/d*100)+'%';
+   status(label+' · '+Math.round(v.currentTime-st)+'/'+Math.round(d)+' giây');
+   requestAnimationFrame(tick)};
+  tick()});
+ v.pause();speechSynthesis.cancel();r.stop();await done;
+ if(disp)disp.getTracks().forEach(t=>t.stop());
+ ac.close();
+ if(stopFlag)return null;
+ const fx=(r.mimeType||'').includes('mp4')?'mp4':'webm';
+ const blob=new Blob(chunks,{type:r.mimeType||'video/webm'});
+ const url=URL.createObjectURL(blob),name='Roblox_Video_'+String(i+1).padStart(2,'0')+'.'+fx;
+ const row=document.createElement('div');row.className='item';
+ row.innerHTML='<span>✅ '+name+' · dự kiến '+Math.round(d)+' giây'+(fx==='webm'?' (trình duyệt này chưa hỗ trợ MP4)':'')+'</span><a class="dl" href="'+url+'" download="'+name+'">Tải về</a>';
+ $('#out').appendChild(row);
+ return url;
+}
+async function run(list){
+ if(busy)return;if(!vids.length){status('Hãy thêm video trước.');return}
+ busy=true;stopFlag=false;$('#exOne').disabled=$('#exAll').disabled=true;
+ try{
+  for(const i of list){if(stopFlag)break;await exportOne(i,'Video #'+(i+1))}
+  status(stopFlag?'Đã dừng.':'Xong. Bấm “Tải về” ở từng video.');
+ }catch(e){status('Lỗi: '+e.message)}
+ busy=false;$('#exOne').disabled=$('#exAll').disabled=false;$('#prog').style.width='0';
+}
+$('#exOne').onclick=()=>run([cur]);
+$('#exAll').onclick=()=>run(vids.map((_,i)=>i));
+$('#stop').onclick=()=>{stopFlag=true;speechSynthesis.cancel()};
+
+/* tabs */
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+ if(b.dataset.t==='g'){$('#guide').hidden=false;return}
+ document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+ $('#tabEdit').hidden=b.dataset.t!=='e';$('#tabRec').hidden=b.dataset.t!=='r'});
+
+/* phiên âm */
+const PH=[[/XcloudPhone/gi,'Ích Cờ Lao Phôn'],[/Roblox/gi,'Rô Blốc'],[/FPS/g,'Ép Pi Ét']];
+function phon(t){return PH.reduce((s,[a,b])=>s.replace(a,b),t)}
+let ext=null;$('#mp3').onchange=e=>{const f=e.target.files[0];ext=f?URL.createObjectURL(f):null};
+
+/* tự tạo kịch bản */
+const G={
+a:["Anh em chơi Roblox mà máy yếu hay bị giật lag thì thử XcloudPhone nhé.","Bạn nào đang chán cảnh máy nóng ran, hết dung lượng khi chơi Roblox thì xem video này nhé.","Hôm nay mình giới thiệu cách chơi Roblox bằng điện thoại đám mây XcloudPhone.","Muốn chơi Roblox mượt mà mà không cần đổi máy mới thì đây là một hướng đáng thử."],
+b:["XcloudPhone là điện thoại Android chạy trên máy chủ từ xa, nên phần đồ họa nặng không đè lên máy của mình.","Mình chỉ cần mở lên, kết nối vào máy ảo là vào game luôn, không phải cài đặt nặng nề gì thêm.","Dùng được trên cả máy tính lẫn điện thoại, nên chơi ở đâu cũng tiện.","Máy ảo là một thiết bị riêng, nên mình có thể để nguyên game rồi quay lại chơi tiếp khi cần."],
+c:["Trải nghiệm của mình là thao tác chạm vuốt khá mượt, vào các map đông người cũng ổn hơn trên chiếc máy cũ.","Chơi một lúc lâu mình thấy máy cá nhân không còn nóng và hao pin như trước.","Hình ảnh sắc nét, âm thanh rõ nên nghe hiệu ứng trong game rất đã.","Mình thấy khá hợp để cày vật phẩm hay làm nhiệm vụ mà không phải ôm máy cả ngày."],
+d:["Mỗi người một cấu hình mạng và thiết bị nên kết quả có thể khác nhau, bạn cứ dùng thử rồi tự đánh giá.","Nếu muốn kiểm chứng thì tạo tài khoản XcloudPhone, thử Roblox trên đó xem có hợp với mình không.","Mình khuyên bạn thử vài ngày trước rồi hãy quyết định có dùng lâu dài hay không."],
+e:["Video này có hợp tác quảng cáo nhé, hẹn gặp lại ở video sau!"]};
+const rp=(a,n)=>[...a].sort(()=>Math.random()-.5).slice(0,n);
+function gen(){const n=Math.max(vids.length,3),o=[];for(let k=0;k<n;k++)o.push([...rp(G.a,1),...rp(G.b,2),...rp(G.c,2),...rp(G.d,1),...G.e].join(' '));$('#script').value=o.join('\n\n');match()}
+$('#auto').onclick=gen;
+
+/* SRT */
+function ts(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+(s%60).toFixed(3).padStart(6,'0').replace('.',',')}
+$('#srt').onclick=()=>{const it=vids[cur],s=sents(scripts()[cur]);if(!it||!s.length)return;const d=it.end?it.end-(it.start||0):(pv.duration||70),tot=s.reduce((a,x)=>a+x.length,0);let t=0,o='';s.forEach((x,k)=>{const e=t+x.length/tot*d;o+=(k+1)+'\n'+ts(t)+' --> '+ts(e)+'\n'+x+'\n\n';t=e});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o],{type:'text/plain'}));a.download='PhuDe_'+(cur+1)+'.srt';a.click()};
+
+/* quay hàng loạt */
+let wk;try{wk=new Worker(URL.createObjectURL(new Blob(['let i;onmessage=e=>{clearInterval(i);if(e.data)i=setInterval(()=>postMessage(0),200)}'],{type:'text/javascript'})))}catch(e){wk={postMessage(v){clearInterval(this.i);if(v)this.i=setInterval(()=>this.onmessage&&this.onmessage(),200)}}}
+let rstop=false,rl=[];
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
+function wait(ms,cb){return new Promise(r=>{const t0=performance.now();wk.onmessage=()=>{const el=performance.now()-t0;cb&&cb(el);if(el>=ms||rstop){wk.postMessage(0);r()}};wk.postMessage(1)})}
+const pc=document.createElement('canvas');pc.width=320;pc.height=120;const pcx=pc.getContext('2d');
+function clock(t,s){$('#clk').textContent=t;pcx.fillStyle='#000';pcx.fillRect(0,0,320,120);pcx.fillStyle='#fff';pcx.textAlign='center';pcx.font='700 56px monospace';pcx.fillText(t,160,70);pcx.font='16px sans-serif';pcx.fillText(s||'',160,105)}
+$('#pip').onclick=async()=>{try{clock($('#clk').textContent);const w=document.createElement('video');w.muted=true;w.srcObject=pc.captureStream(5);await w.play();await w.requestPictureInPicture()}catch(e){$('#rst').textContent='Trình duyệt không hỗ trợ cửa sổ nổi: '+e.message}};
+function drawR(){$('#rcnt').textContent=rl.length;const L=$('#rlist');if(!rl.length){L.textContent='Chưa có video nào.';return}L.innerHTML='';rl.forEach((x,i)=>{const d=document.createElement('div');d.className='item';d.innerHTML='<span>Video '+(i+1)+' · '+x.name+'</span>'+(x.end?'':'<a class="dl" href="'+x.url+'" download="'+x.name+'">Lưu</a>');L.appendChild(d)})}
+$('#toEdit').onclick=()=>{if(!rl.length)return;rl.forEach(x=>vids.push({...x}));cur=vids.length-rl.length;rl=[];drawR();renderList();document.querySelector('[data-t=e]').click()};
+$('#phone').onchange=e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f),v=document.createElement('video');v.src=url;v.onloadedmetadata=()=>{const L=+$('#rd').value;for(let st=0,k=1;st<v.duration;st+=L,k++){const en=Math.min(v.duration,st+L);if(en-st>=3)rl.push({url,start:st,end:en,name:'Video_'+k+'_cắt'})}drawR()};e.target.value=''};
+$('#rx').onclick=()=>{rstop=true};
+$('#rs').onclick=async()=>{
+ if(!navigator.mediaDevices.getDisplayMedia){$('#rst').textContent='Trình duyệt này không quay được màn hình. Hãy quay bằng máy rồi nạp video vào bên dưới.';return}
+ const N=+$('#rn').value||1,D=+$('#rd').value,C=+$('#rc').value,Gp=+$('#rg').value;rstop=false;
+ let s,ka=null;
+ try{s=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:+$('#rf').value},audio:$('#ra').checked})}catch(e){$('#rst').textContent='Chưa chọn được cửa sổ: '+e.message;return}
+ if($('#rk').checked){try{const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();g.gain.value=0.0001;o.connect(g).connect(a.destination);o.start();ka=a}catch(e){}}
+ $('#rs').disabled=true;
+ for(let k=1;k<=N&&!rstop;k++){
+  if(C)await wait(C*1000,t=>{clock(String(Math.ceil(C-t/1000)),'Chuẩn bị video '+k);$('#rst').textContent='Đếm ngược...'});
+  if(rstop)break;
+  const ch=[],mr=new MediaRecorder(s,{mimeType:pickMime()});mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
+  const fin=new Promise(r=>mr.onstop=r);mr.start(1000);
+  await wait(D*1000,t=>{clock(mmss(Math.max(0,D-t/1000)),'Video '+k+'/'+N);$('#rp').style.width=((k-1+Math.min(1,t/1000/D))/N*100)+'%';$('#rst').textContent='Đang quay video '+k+'/'+N});
+  mr.stop();await fin;
+  const mp=String(mr.mimeType).includes('mp4');rl.push({url:URL.createObjectURL(new Blob(ch,{type:mr.mimeType||'video/webm'})),name:'XcloudPhone_Roblox_Video_'+String(k).padStart(2,'0')+(mp?'.mp4':'.webm')});drawR();
+  if(k<N&&Gp&&!rstop)await wait(Gp*1000);
+ }
+ s.getTracks().forEach(t=>t.stop());if(ka)ka.close();wk.postMessage(0);
+ $('#rs').disabled=false;clock(mmss(D));$('#rst').textContent=rstop?'Đã dừng.':'Xong. Bấm “Chuyển tất cả qua tab Edit”.'};
+
+setCrop(PRE.std);renderList();
+</script>
+</body>
+</html>
